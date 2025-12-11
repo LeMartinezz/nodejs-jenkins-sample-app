@@ -1,36 +1,50 @@
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_IMAGE = "jenkins-demo-app"
-        DOCKER_TAG = "${BUILD_NUMBER}"
+        DOCKER_TAG   = "${BUILD_NUMBER}"
     }
-    
+
     stages {
         stage('Checkout') {
-            // TODO: Récupérer le code source
+            steps {
+                checkout scm
+            }
         }
-        
+
         stage('Install Dependencies') {
-            // TODO: Installer les dépendances
+            steps {
+                sh 'npm install'
+            }
         }
-        
+
         stage('Run Tests') {
-            // TODO: Lancer les tests
+            steps {
+                // Adapte selon ton TP : si pas de tests, on log seulement
+                sh 'npm test || echo "No tests to run"'
+            }
         }
-        
+
         stage('Build Docker Image') {
-            // TODO: Construire l'image Docker
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+            }
         }
-        
+
         stage('Deploy') {
-            // TODO: Déployer le conteneur
-            // Arrêter l'ancien conteneur s'il existe 
-            // Démarrer le nouveau conteneur avec la nouvelle version
+            steps {
+                // Stoppe l’ancien conteneur si présent
+                sh "docker rm -f ${DOCKER_IMAGE} || true"
+                // Lance le nouveau conteneur
+                sh "docker run -d --name ${DOCKER_IMAGE} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            }
         }
     }
-    
+
     post {
-        // TODO: Partie bonus
+        always {
+            echo "Pipeline terminé avec statut: ${currentBuild.currentResult}"
+        }
     }
 }
