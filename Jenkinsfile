@@ -30,6 +30,7 @@ stage('Build Docker Image') {
         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
     }
 }
+    }
 
 stage('Deploy') {
     steps {
