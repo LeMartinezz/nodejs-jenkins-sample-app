@@ -21,23 +21,19 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // Adapte selon ton TP : si pas de tests, on log seulement
                 sh 'npm test || echo "No tests to run"'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                echo "TODO: docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
             }
         }
 
         stage('Deploy') {
             steps {
-                // Stoppe l’ancien conteneur si présent
-                sh "docker rm -f ${DOCKER_IMAGE} || true"
-                // Lance le nouveau conteneur
-                sh "docker run -d --name ${DOCKER_IMAGE} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                echo "TODO: stop old container and run ${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
     }
