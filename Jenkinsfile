@@ -25,18 +25,25 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                echo "TODO: docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo "TODO: stop old container and run ${DOCKER_IMAGE}:${DOCKER_TAG}"
-            }
-        }
+stage('Build Docker Image') {
+    steps {
+        sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
     }
+}
+
+stage('Deploy') {
+    steps {
+        // Arrêter et supprimer l'ancien conteneur s'il existe
+        sh """
+          docker stop ${DOCKER_IMAGE} || true
+          docker rm ${DOCKER_IMAGE} || true
+        """
+        // Lancer le nouveau conteneur sur le port 3000
+        sh """
+          docker run -d --name ${DOCKER_IMAGE} -p 3000:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}
+        """
+    }
+}
 
     post {
         always {
